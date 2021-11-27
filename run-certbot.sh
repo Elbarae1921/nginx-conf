@@ -1,5 +1,9 @@
 #!/bin/bash
 
+until [ "`docker inspect -f {{.State.Running}} nginx`"=="true" ]; do
+    sleep 1;
+done;
+
 cat <<EOF | docker exec --interactive nginx sh
 apt-get update
 apt-get install certbot python3-certbot-nginx -y
