@@ -1,9 +1,0 @@
-version: '3'
-services:
-  nginx:
-    container_name: nginx
-    image: nginx:latest
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./letsencrypt:/etc/letsencrypt
-    network_mode: host

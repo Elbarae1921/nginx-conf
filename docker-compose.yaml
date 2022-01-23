@@ -1,0 +1,32 @@
+version: "3.3"
+
+services:
+
+  certbot:
+    container_name: certbot
+    build: 
+      context: .
+      dockerfile: "Dockerfile.certbot"
+    restart: unless-stopped
+    volumes:
+      - ./etc/letsencrypt:/etc/letsencrypt
+      - ./etc/nginx/dhparam:/etc/nginx/dhparam
+      - ./var/www/_letsencrypt:/var/www/_letsencrypt
+      - ./var/www/certbot:/var/www/certbot
+    entrypoint: [ "/entrypoints/certbot-entrypoint.sh" ]
+
+  nginx:
+    container_name: nginx
+    build:
+      context: "."
+      dockerfile: "Dockerfile"
+    restart: unless-stopped
+    volumes:
+      - ./etc/letsencrypt:/etc/letsencrypt
+      - ./etc/nginx/dhparam:/etc/nginx/dhparam
+      - ./var/www/_letsencrypt:/var/www/_letsencrypt
+      - ./var/www/certbot:/var/www/certbot
+    network_mode: host
+    depends_on:
+      - certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
